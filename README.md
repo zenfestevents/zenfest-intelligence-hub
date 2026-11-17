@@ -54,8 +54,9 @@ Douyin / Xiaohongshu / Weibo (block automated reading; China comes through Chine
    ```bash
    cd backend && .venv\Scripts\python.exe ideas.py import-notion data\notion_idea_bank_2026-11-17.json
    ```
-5. **GitHub:** create a private repo, push this folder, then Settings → Secrets and variables → Actions:
-   add `DATABASE_URL`, `APIFY_TOKEN` and `RSSHUB_URL`. Open Actions → "Zenfest poller" → Run workflow to test.
+5. **GitHub: done 2026-11-17.** Private repo `zenfestevents/zenfest-intelligence-hub` with the secrets
+   `DATABASE_URL`, `APIFY_TOKEN` (the AI Hub's shared Apify account) and `RSSHUB_URL`.
+   Actions → "Zenfest poller" → Run workflow to test by hand.
 6. **Vercel:** Add New → Project → this repo, Root Directory `frontend`, environment variable `DATABASE_URL`.
 7. **Claude tasks: on since 2026-11-17.** `hub-summarise-queue` (about 06:15 daily) and `hub-daily-ideas`
    (about 07:45 daily) run in the Claude desktop app while it is open (a missed run happens at the next
