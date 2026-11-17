@@ -1,4 +1,5 @@
 name: Zenfest poller
+# Collection for the Zenfest Intelligence Hub (public repo: secrets live only in GitHub secrets).
 
 # Fetches every event source and queues new articles on GitHub's free runners (no LLM, no AI key).
 # Claude summarises the queue as a scheduled task (see backend/claude_queue.py).

@@ -1,4 +1,5 @@
 name: Instagram poller
+# Instagram for the Zenfest Intelligence Hub, inside the shared Apify account's free $5 a month.
 
 # Reads the Instagram accounts and hashtags in backend/feeds.py through Apify and queues new posts.
 # Needs two repository secrets: DATABASE_URL and APIFY_TOKEN (the Zenfest Apify account).
