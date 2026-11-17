@@ -1,0 +1,48 @@
+name: Zenfest poller
+
+# Fetches every event source and queues new articles on GitHub's free runners (no LLM, no AI key).
+# Claude summarises the queue as a scheduled task (see backend/claude_queue.py).
+# Needs one repository secret: DATABASE_URL. Optional: RSSHUB_URL (self-hosted RSSHub).
+on:
+  schedule:
+    - cron: "11,41 * * * *" # every 30 minutes (GitHub may start it a few minutes late)
+  workflow_dispatch: {}
+
+concurrency:
+  group: zenfest-poller
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      RSSHUB_URL: ${{ secrets.RSSHUB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check secrets are present
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Add DATABASE_URL under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Queue new articles
+        run: python ingest.py

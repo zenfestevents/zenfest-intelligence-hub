@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0b0907;
+  color: #fbf7ee;
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid #d9b24c;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: #d9b24c;
+  color: #0b0907;
+}
+
+@layer components {
+  /* Small uppercase label. */
+  .label {
+    @apply text-[11px] uppercase tracking-[0.1em] text-dim;
+  }
+
+  /* 1px dividing lines made from the gap between cells. */
+  .gridlines {
+    @apply grid gap-px bg-line border border-line;
+  }
+
+  .cell {
+    @apply bg-panel;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

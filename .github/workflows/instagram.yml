@@ -1,0 +1,58 @@
+name: Instagram poller
+
+# Reads the Instagram accounts and hashtags in backend/feeds.py through Apify and queues new posts.
+# Needs two repository secrets: DATABASE_URL and APIFY_TOKEN (the Zenfest Apify account).
+# Budget: the free $5 a month. Accounts every 2 days, hashtags once a week; the script refuses to
+# start a run that could push the month past APIFY_MONTHLY_CAP_USD (default $4.50).
+on:
+  schedule:
+    - cron: "23 1 */2 * *" # accounts: every 2 days, 06:53 IST
+    - cron: "37 1 * * 1"   # hashtags: Mondays, 07:07 IST
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: "profiles or hashtags"
+        required: true
+        default: "profiles"
+
+concurrency:
+  group: zenfest-instagram
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  instagram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check secrets are present
+        run: |
+          if [ -z "$DATABASE_URL" ] || [ -z "$APIFY_TOKEN" ]; then
+            echo "::error::Add DATABASE_URL and APIFY_TOKEN under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Read Instagram
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then KIND="${{ github.event.inputs.kind }}";
+          elif [ "${{ github.event.schedule }}" = "37 1 * * 1" ]; then KIND=hashtags; else KIND=profiles; fi
+          python instagram_ingest.py "$KIND"
