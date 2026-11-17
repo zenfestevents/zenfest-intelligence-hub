@@ -57,7 +57,9 @@ Douyin / Xiaohongshu / Weibo (block automated reading; China comes through Chine
 5. **GitHub: done 2026-11-17.** Private repo `zenfestevents/zenfest-intelligence-hub` with the secrets
    `DATABASE_URL`, `APIFY_TOKEN` (the AI Hub's shared Apify account) and `RSSHUB_URL`.
    Actions → "Zenfest poller" → Run workflow to test by hand.
-6. **Vercel:** Add New → Project → this repo, Root Directory `frontend`, environment variable `DATABASE_URL`.
+6. **Vercel: not used (owner, 2026-11-17).** The ideas arrive as the daily job's message in the Claude app.
+   The dashboard still works on this PC (`cd frontend`, `npm run dev`, http://localhost:3000); to put it
+   online later: Vercel → Add New → Project → this repo, Root Directory `frontend`, variable `DATABASE_URL`.
 7. **Claude tasks: on since 2026-11-17.** `hub-summarise-queue` (about 06:15 daily) and `hub-daily-ideas`
    (about 07:45 daily) run in the Claude desktop app while it is open (a missed run happens at the next
    launch). Until the GitHub poller is set up, the summarise job first runs `ingest.py` itself.
