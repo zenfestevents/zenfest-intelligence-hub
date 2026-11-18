@@ -11,7 +11,7 @@ $5 a month. Nothing is produced until the owner approves a script.
 
 | Step | What happens | Where it runs | Cost |
 | --- | --- | --- | --- |
-| 1. Collect | `backend/ingest.py` reads 71 free news feeds every 30 minutes and puts new event stories in a waiting queue | GitHub Actions | free |
+| 1. Collect | `backend/ingest.py` reads 82 free news feeds every 30 minutes and puts new event stories in a waiting queue | GitHub Actions | free |
 | 1b. Instagram | `backend/instagram_ingest.py` reads 29 event pages (every 2 days) and 5 hashtags (Mondays) through Apify | GitHub Actions | inside Apify's free $5/month; stops itself at $4.50 |
 | 2. Check | Claude reads the queue, writes a summary, a reel hook and a brand-safety note, and copies one sentence word for word. Plain Python checks that sentence really is in the article; if not, the item is thrown away | scheduled Claude task `hub-summarise-queue` (this PC) | Claude plan |
 | 3. Ideas | Every morning Claude picks 7-8 ideas mixing Tamil Nadu, India, Global, East Asia and Middle East, and marks one Today's Pick | scheduled Claude task `hub-daily-ideas` (this PC) | Claude plan |
@@ -27,6 +27,7 @@ All in `backend/feeds.py`, grouped by region:
 - **Tamil Nadu:** The Hindu (Tamil Nadu, Chennai, Coimbatore, Madurai, Tiruchi), DT Next, Hindu Tamil Thisai, Dinamani, Vikatan (Tamil, Claude translates), Mylapore Times, The Madras Day, AllEvents Chennai, and news searches for Tamil Nadu weddings and Chennai / Coimbatore / Madurai events.
 - **India:** EventFAQs, WeddingSutra, Wedding Affair, MediaNews4U, TravTalk, Exhibition Showcase, news searches for WedMeGood, exchange4media and wedding trends.
 - **Global:** BizBash, Skift Meetings, TTGmice, TSNN, Exhibition News, Access All Areas, TPi, Festival Insights, Pollstar, Smart Meetings, PCMA, ICCA, MIX, mice.net.au, blooloop, DroneXL, Designboom, My Modern Met, ILEA, news searches for Event Industry News, Event Marketer, décor trends and event technology.
+- **Event tech and AI tools (added 2026-11-18):** EventTechnology.org, Skift Meetings (AI tag), event-software blogs (Cvent, Airmeet) and a wedding-app blog (Joy), plus news searches for AI wedding planning, AI wedding planner apps, AI event planning, AI wedding invitations, AI party planning and AI event software. Zenfest's own AI-tool source: never borrow topics from the AI Hub (the AI page is a separate brand).
 - **East Asia:** Entertainment Technology Asia, Korea Herald, Korea Times, Japan Times, d'strict, news searches for China drone shows, Japan projection mapping and Korea media art, and Chinese-language sources through RSSHub (36Kr searches for drone shows, light shows, immersive and weddings; The Paper; Zaobao).
 - **Middle East:** Gulf News, Khaleej Times, Arab News, Arabian Business, Global Village Dubai, news searches for Riyadh Season, Dubai events and Saudi festivals.
 - **Instagram (Apify):** 7 Tamil Nadu décor and wedding pages, 9 India, 9 Global, 1 East Asia, 3 Middle East; hashtags #chennaiweddingdecor, #tamilwedding, #mandapdecor, #southindianwedding, #eventdecor.

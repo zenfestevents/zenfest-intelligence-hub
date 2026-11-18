@@ -184,6 +184,24 @@ FEEDS: List[Feed] = [
     Feed("News: wedding décor trends", bing("wedding decor trends"), "Global", 720, events_only=True),
     Feed("News: event technology", bing("event technology OR \"drone light show\" OR \"projection mapping\"", "en-US"),
          "Global", 360, events_only=True),
+    # ---------------------------------------------------------------- Event tech and AI tools (owner, 2026-11-18)
+    # Zenfest's own source for AI and software news about events, so it never borrows from the AI Hub
+    # (the AI page is a separate brand). Region is "Global"; Claude sets each story's real region.
+    Feed("EventTechnology.org", "https://eventtechnology.org/feed/", "Global", 120,
+         note="Event-tech trade site; posts daily."),
+    Feed("Skift Meetings - AI", "https://meetings.skift.com/tag/ai/feed/", "Global", 360),
+    Feed("Cvent Blog", "https://www.cvent.com/en/blog/feed.xml", "Global", 360,
+         note="Event-software company blog: tips and how-tos; idea only, never name the company in a reel."),
+    Feed("Airmeet Blog", "https://www.airmeet.com/hub/feed/", "Global", 360,
+         note="Event-software company (Indian-founded) blog; idea only."),
+    Feed("Joy Wedding Blog", "https://withjoy.com/blog/feed/", "Global", 720,
+         note="Wedding website/app company blog (guest lists, RSVPs); posts rarely; idea only."),
+    Feed("News: AI wedding planning", bing("AI wedding planning"), "India", 720),
+    Feed("News: AI wedding planner apps", bing("AI wedding planner app", "en-US"), "Global", 720),
+    Feed("News: AI event planning", bing("AI event planning", "en-US"), "Global", 360),
+    Feed("News: AI wedding invitations", bing("AI wedding invitation"), "India", 720),
+    Feed("News: AI party planning", bing("AI party planning", "en-US"), "Global", 720),
+    Feed("News: AI event software", bing("event management software AI", "en-US"), "Global", 720),
     # ---------------------------------------------------------------- East Asia
     Feed("Entertainment Technology Asia", "https://www.e-techasia.com/feed/", "East Asia", 60),
     Feed("Korea Herald", "https://www.koreaherald.com/rss/newsAll", "East Asia", 60, events_only=True,

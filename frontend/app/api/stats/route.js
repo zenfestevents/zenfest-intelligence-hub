@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 // Enabled feeds in backend/feeds.py (with RSSHub on). Update when that list changes:
 //   python -c "import feeds; print(len(feeds.ENABLED_FEEDS))"
-const SOURCES_ENABLED = 71;
+const SOURCES_ENABLED = 82;
 const INSTAGRAM_TARGETS = 34; // 29 accounts + 5 hashtags (feeds.py INSTAGRAM_*)
 // The poller runs every 30 minutes; treat it as active if it wrote anything recently.
 const ACTIVE_WINDOW_MS = 3 * 60 * 60 * 1000;

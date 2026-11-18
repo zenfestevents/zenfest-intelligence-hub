@@ -25,6 +25,8 @@ Notion ideas are in `backend/data/` for import.
   (`MIX_TARGET` in `ideas.py`). Event tech often appears first in China, Korea, Japan and the Gulf.
 
 ## Easy to get wrong
+- **Never take Zenfest topics from the AI Hub's tables** (owner, 2026-11-18: the AI page is a separate brand).
+  Event-tech and AI-tool news comes from the "Event tech and AI tools" group in `feeds.py`.
 - Never scrape LinkedIn. Reddit stays off until API approval. Never log in to Instagram or give a
   scraper cookies; Instagram posts are ideas only, never reposted.
 - General news feeds use `events_only=True` (headline must contain an event word, `EVENT_WORDS`,
