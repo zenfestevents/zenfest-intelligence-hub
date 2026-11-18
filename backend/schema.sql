@@ -81,6 +81,23 @@ CREATE TABLE IF NOT EXISTS zf_apify_runs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- The source list (feeds.py), rewritten by sources_sync.py at the start of every ingest run, so the
+-- web app's /admin/intelligence/sources page shows exactly what is being collected (2026-11-18).
+-- kind: rss | search | rsshub | instagram_account | instagram_hashtag
+CREATE TABLE IF NOT EXISTS zf_sources (
+    label VARCHAR(100) PRIMARY KEY,
+    region VARCHAR(30) NOT NULL,
+    kind VARCHAR(30) NOT NULL,
+    url TEXT NOT NULL DEFAULT '',
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    events_only BOOLEAN NOT NULL DEFAULT FALSE,
+    scan_only BOOLEAN NOT NULL DEFAULT FALSE,
+    interval_min INTEGER NOT NULL DEFAULT 0,
+    note TEXT NOT NULL DEFAULT '',
+    listed BOOLEAN NOT NULL DEFAULT TRUE,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS idx_zf_pending_published_at ON zf_pending_articles(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_zf_intel_published_at ON zf_intel_feed(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_zf_intel_region ON zf_intel_feed(region);
@@ -96,3 +113,4 @@ ALTER TABLE zf_rejected_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE zf_pending_articles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE zf_reel_ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE zf_apify_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE zf_sources ENABLE ROW LEVEL SECURITY;

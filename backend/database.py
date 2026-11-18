@@ -105,6 +105,23 @@ class DBApifyRun(Base):
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
+class DBSource(Base):
+    """The source list from feeds.py, rewritten by sources_sync.py each ingest run (for the web app's
+    Sources page). listed=False = removed from feeds.py, kept so old items still have a region."""
+    __tablename__ = "zf_sources"
+    label = Column(String(100), primary_key=True)
+    region = Column(String(30), nullable=False)
+    kind = Column(String(30), nullable=False)
+    url = Column(Text, nullable=False, default="")
+    enabled = Column(Boolean, nullable=False, default=True)
+    events_only = Column(Boolean, nullable=False, default=False)
+    scan_only = Column(Boolean, nullable=False, default=False)
+    interval_min = Column(Integer, nullable=False, default=0)
+    note = Column(Text, nullable=False, default="")
+    listed = Column(Boolean, nullable=False, default=True)
+    updated_at = Column(DateTime(timezone=True), default=utcnow)
+
+
 def init_db() -> None:
     """Create tables. On PostgreSQL this runs schema.sql; elsewhere it uses the ORM."""
     if engine.dialect.name == "postgresql":

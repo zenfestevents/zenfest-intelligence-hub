@@ -84,6 +84,13 @@ def ingest_feed(feed: Feed) -> int:
 
 
 def run(only: Optional[str] = None) -> int:
+    if not only:
+        # Keep the web app's Sources page in step with feeds.py. Never let it stop collecting.
+        try:
+            from sources_sync import sync_sources
+            logger.info(f"Source list synced: {sync_sources()} sources")
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"Source list sync failed (collecting anyway): {exc}")
     total = 0
     for feed in ENABLED_FEEDS:
         if feed.scan_only:
