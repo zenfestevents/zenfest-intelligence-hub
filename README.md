@@ -15,7 +15,7 @@ $5 a month. Nothing is produced until the owner approves a script.
 | 1b. Instagram | `backend/instagram_ingest.py` reads 29 event pages (every 2 days) and 5 hashtags (Mondays) through Apify | GitHub Actions | inside Apify's free $5/month; stops itself at $4.50 |
 | 2. Check | Claude reads the queue, writes a summary, a reel hook and a brand-safety note, and copies one sentence word for word. Plain Python checks that sentence really is in the article; if not, the item is thrown away | scheduled Claude task `hub-summarise-queue` (this PC) | Claude plan |
 | 3. Ideas | Every morning Claude picks 7-8 ideas mixing Tamil Nadu, India, Global, East Asia and Middle East, and marks one Today's Pick | scheduled Claude task `hub-daily-ideas` (this PC) | Claude plan |
-| 4. Look | The dashboard shows the ideas, the verified feed by region, Instagram finds and the queue | Vercel | free |
+| 4. Look | The Zenfest website's admin shows it to every team login at zenfestevents.in/admin/intelligence: Today, Reel ideas, News, Sources (since 2026-11-18). `ingest.py` copies the source list from `feeds.py` into `zf_sources` each run (`sources_sync.py`) for the Sources page. The local `frontend/` dashboard still works on this PC | Zenfest website (Vercel) | free |
 
 `backend/daily_scan.py` is a free one-shot headline list of every source for the last 24 hours,
 grouped by region (report in `work/`). Use it any time.
