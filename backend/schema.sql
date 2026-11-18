@@ -98,6 +98,22 @@ CREATE TABLE IF NOT EXISTS zf_sources (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- The owner's feed in the website admin (2026-11-18): simple-English text, a picture, and the
+-- card buttons ("Reel idea" / "Revisit"). Added with IF NOT EXISTS so this file stays re-runnable.
+ALTER TABLE zf_intel_feed ADD COLUMN IF NOT EXISTS plain_headline TEXT NOT NULL DEFAULT '';
+ALTER TABLE zf_intel_feed ADD COLUMN IF NOT EXISTS plain_story TEXT NOT NULL DEFAULT '';
+ALTER TABLE zf_intel_feed ADD COLUMN IF NOT EXISTS example TEXT NOT NULL DEFAULT '';
+ALTER TABLE zf_intel_feed ADD COLUMN IF NOT EXISTS image_url TEXT NOT NULL DEFAULT '';
+ALTER TABLE zf_pending_articles ADD COLUMN IF NOT EXISTS image_url TEXT NOT NULL DEFAULT '';
+ALTER TABLE zf_reel_ideas ADD COLUMN IF NOT EXISTS picked BOOLEAN NOT NULL DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS zf_feed_marks (
+    intel_id UUID NOT NULL REFERENCES zf_intel_feed(id) ON DELETE CASCADE,
+    kind VARCHAR(10) NOT NULL CHECK (kind IN ('reel', 'revisit')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    PRIMARY KEY (intel_id, kind)
+);
+
 CREATE INDEX IF NOT EXISTS idx_zf_pending_published_at ON zf_pending_articles(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_zf_intel_published_at ON zf_intel_feed(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_zf_intel_region ON zf_intel_feed(region);
@@ -114,3 +130,4 @@ ALTER TABLE zf_pending_articles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE zf_reel_ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE zf_apify_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE zf_sources ENABLE ROW LEVEL SECURITY;
+ALTER TABLE zf_feed_marks ENABLE ROW LEVEL SECURITY;

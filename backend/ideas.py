@@ -4,6 +4,8 @@ Replaces the Notion "Zenfest Idea Bank" (owner, 2026-11-17). Used by the daily C
 
   python ideas.py candidates [DAYS]   verified items from the last DAYS days (default 3) not yet
                                       used as ideas, best first, plus today's region mix so far
+  python ideas.py picks               feed items the owner tapped "Reel idea" on in the website admin
+                                      that are not ideas yet (add them with "picked": true)
   python ideas.py add FILE            save Claude's chosen ideas (JSON list); exactly one may be
                                       "today_pick": true. Gives each an idea code ZF-YYYYMMDD-NN.
   python ideas.py tidy                news ideas older than 14 days -> Outdated (never touches
@@ -22,7 +24,7 @@ from typing import Any, Dict, List
 
 from sqlalchemy import func
 
-from database import DBIdea, DBIntelFeed, SessionLocal
+from database import DBFeedMark, DBIdea, DBIntelFeed, SessionLocal
 
 STATUSES = ("Today's Pick", "Idea Bank", "Scripted", "Posted", "Outdated")
 # How many ideas a day, per region (the daily task aims for this, never forces a weak one).
@@ -87,6 +89,43 @@ def candidates(days: int) -> Dict[str, Any]:
         db.close()
 
 
+def picks() -> Dict[str, Any]:
+    """Feed items the owner tapped "Reel idea" on (zf_feed_marks kind='reel') that are not ideas yet.
+    An owner pick that already is an idea just gets picked=True. Add the rest with "picked": true."""
+    db = SessionLocal()
+    try:
+        marked = (
+            db.query(DBIntelFeed)
+            .join(DBFeedMark, DBFeedMark.intel_id == DBIntelFeed.id)
+            .filter(DBFeedMark.kind == "reel")
+            .all()
+        )
+        today = _today()
+        items = []
+        flagged = 0
+        for r in marked:
+            existing = db.query(DBIdea).filter((DBIdea.intel_id == r.id) | (DBIdea.source_url == r.source_url)).first()
+            if existing:
+                if not existing.picked:
+                    existing.picked = True
+                    flagged += 1
+                continue
+            items.append({
+                "intel_id": str(r.id), "title": r.title, "summary": r.summary,
+                "plain_story": r.plain_story, "example": r.example,
+                "region": r.region, "category": r.primary_category, "source": r.source_label,
+                "source_url": r.source_url, "published": r.published_at.date().isoformat(),
+                "hook_idea": r.hook_idea,
+                "scores": {"hook": r.hook_score, "relevance": r.relevance_score, "visual": r.visual_score,
+                           "freshness": freshness(r.published_at.date(), today)},
+                "evergreen": r.evergreen, "brand_note": r.brand_note,
+            })
+        db.commit()
+        return {"already_ideas_flagged": flagged, "items": items}
+    finally:
+        db.close()
+
+
 def _next_codes(db, today: datetime.date, n: int) -> List[str]:
     prefix = f"ZF-{today:%Y%m%d}-"
     last = (db.query(func.max(DBIdea.idea_code)).filter(DBIdea.idea_code.like(prefix + "%")).scalar() or "")
@@ -147,6 +186,7 @@ def add(items: List[Dict[str, Any]]) -> Dict[str, Any]:
                 visual_score=_clamp(i.get("visual_score")),
                 freshness_score=freshness(published, today),
                 brand_note=i.get("brand_note", ""),
+                picked=bool(i.get("picked")),
                 intel_id=_uuid(i.get("intel_id")),
             ))
         db.commit()
@@ -228,6 +268,8 @@ if __name__ == "__main__":
     cmd, args = (sys.argv[1] if len(sys.argv) > 1 else ""), sys.argv[2:]
     if cmd == "candidates":
         print(json.dumps(candidates(int(args[0]) if args else 3), ensure_ascii=False))
+    elif cmd == "picks":
+        print(json.dumps(picks(), ensure_ascii=False))
     elif cmd == "add":
         print(json.dumps(add(json.load(open(args[0], encoding="utf-8")))))
     elif cmd == "tidy":

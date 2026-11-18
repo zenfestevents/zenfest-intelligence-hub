@@ -41,7 +41,20 @@ class DBIntelFeed(Base):
     visual_score = Column(SmallInteger, nullable=False, default=1)
     evergreen = Column(Boolean, nullable=False, default=False)
     brand_note = Column(Text, nullable=False, default="")
+    # Simple-English version for the owner's feed in the website admin (2026-11-18).
+    plain_headline = Column(Text, nullable=False, default="")
+    plain_story = Column(Text, nullable=False, default="")
+    example = Column(Text, nullable=False, default="")
+    image_url = Column(Text, nullable=False, default="")
     published_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+
+class DBFeedMark(Base):
+    """The owner's buttons on a feed card in the website admin: kind 'reel' (add to reel ideas) or 'revisit'."""
+    __tablename__ = "zf_feed_marks"
+    intel_id = Column(Uuid(as_uuid=True), ForeignKey("zf_intel_feed.id", ondelete="CASCADE"), primary_key=True)
+    kind = Column(String(10), primary_key=True)
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
@@ -63,6 +76,7 @@ class DBPending(Base):
     source_label = Column(String(100), nullable=False)
     title = Column(Text, nullable=False, default="")
     text = Column(Text, nullable=False)
+    image_url = Column(Text, nullable=False, default="")
     published_at = Column(DateTime(timezone=True), nullable=False, index=True)
     attempts = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), default=utcnow)
@@ -89,6 +103,7 @@ class DBIdea(Base):
     visual_score = Column(SmallInteger, nullable=False, default=1)
     freshness_score = Column(SmallInteger, nullable=False, default=1)
     brand_note = Column(Text, nullable=False, default="")
+    picked = Column(Boolean, nullable=False, default=False)  # True = the owner tapped "Reel idea" on the card
     intel_id = Column(Uuid(as_uuid=True), ForeignKey("zf_intel_feed.id", ondelete="SET NULL"))
     created_at = Column(DateTime(timezone=True), default=utcnow)
 

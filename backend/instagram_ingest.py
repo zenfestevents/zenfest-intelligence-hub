@@ -110,7 +110,8 @@ def posts_from(kind: str, items: List[dict]) -> List[dict]:
             handle = profile.get("username") or ""
             for p in profile.get("latestPosts") or []:
                 posts.append({"url": p.get("url"), "label": f"Instagram @{handle}", "author": handle,
-                              "text": p.get("caption") or "", "published_at": _when(p.get("timestamp"))})
+                              "text": p.get("caption") or "", "published_at": _when(p.get("timestamp")),
+                              "image": p.get("displayUrl") or ""})
     else:
         tag_of = {}
         for ts in INSTAGRAM_HASHTAGS.values():
@@ -119,7 +120,8 @@ def posts_from(kind: str, items: List[dict]) -> List[dict]:
             tag = (p.get("inputUrl") or "").rstrip("/").split("/")[-1].lower()
             label = f"Instagram #{tag_of.get(tag, tag or 'hashtag')}"
             posts.append({"url": p.get("url"), "label": label, "author": p.get("ownerUsername") or "",
-                          "text": p.get("caption") or "", "published_at": _when(p.get("timestamp"))})
+                          "text": p.get("caption") or "", "published_at": _when(p.get("timestamp")),
+                          "image": p.get("displayUrl") or ""})
     return [p for p in posts if p["url"]]
 
 
@@ -160,6 +162,7 @@ def run(kind: str, dry_run: bool = False) -> int:
                     source_label=p["label"][:100],
                     title=f"@{p['author']} on Instagram",
                     text=f"@{p['author']} posted on Instagram:\n\n{text}"[: config.MAX_ARTICLE_CHARS],
+                    image_url=(p.get("image") or "")[:2000],
                     published_at=p["published_at"],
                 ))
                 db.commit()

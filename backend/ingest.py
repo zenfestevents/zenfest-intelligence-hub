@@ -13,7 +13,7 @@ import config
 from database import DBIntelFeed, DBPending, DBRejected, SessionLocal
 from feeds import ENABLED_FEEDS, Feed, is_event_item
 from sources import entry_date, fetch_entries
-from textutil import get_text, resolve_link
+from textutil import get_image, get_text, resolve_link
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("hub.ingest")
@@ -69,6 +69,7 @@ def ingest_feed(feed: Feed) -> int:
                         source_label=feed.label[:100],
                         title=(entry.get("title") or "").strip(),
                         text=text,
+                        image_url=get_image(entry, url)[:2000],
                         published_at=entry_date(entry),
                     )
                 )

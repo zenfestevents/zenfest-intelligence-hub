@@ -71,7 +71,25 @@ class VerifiedIntelExtraction(BaseModel):
         "generically (e.g. 'say a Chinese drone company'). Empty if nothing.",
     )
 
-    @field_validator("hook_idea", "brand_note", mode="before")
+    # The owner's feed in the website admin (2026-11-18): read like a friend explaining it.
+    plain_headline: str = Field(
+        default="",
+        description="Headline in very simple English (max ~12 words), no jargon or trade words "
+        "(say 'big business meeting', not 'MICE'), what happened, not hype",
+    )
+    plain_story: str = Field(
+        default="",
+        description="2-3 short sentences in very simple English: what happened, where, and why an "
+        "event planner in Tamil Nadu should care. Explain any unusual word.",
+    )
+    example: str = Field(
+        default="",
+        description="One real-life example of how this would look in Tamil Nadu: a family's wedding, "
+        "a Coimbatore reception, a Chennai office party, a valaikappu... 1-2 sentences, simple English, "
+        "no real people's names",
+    )
+
+    @field_validator("hook_idea", "brand_note", "plain_headline", "plain_story", "example", mode="before")
     @classmethod
     def _none_to_empty(cls, v):
         return v or ""

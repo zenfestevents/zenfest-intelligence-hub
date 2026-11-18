@@ -43,15 +43,60 @@ def resolve_link(url: str) -> str:
         return url
 
 
+# Main picture (og:image) of each page fetched in this run, for the owner's feed (2026-11-18).
+_PAGE_IMAGES: dict = {}
+
+
+def _clean_image(src) -> str:
+    src = (src or "").strip()
+    return src if src.startswith("https://") or src.startswith("http://") else ""
+
+
+def page_image_from_html(downloaded: str) -> str:
+    try:
+        meta = trafilatura.extract_metadata(downloaded)
+        return _clean_image(getattr(meta, "image", "") if meta else "")
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def fetch_page_text(url: str) -> Optional[str]:
-    """Downloads a web page and returns its main text."""
+    """Downloads a web page and returns its main text (and remembers its main picture)."""
     try:
         downloaded = trafilatura.fetch_url(url)
         if downloaded:
+            _PAGE_IMAGES[url] = page_image_from_html(downloaded)
             return trafilatura.extract(downloaded, include_comments=False, include_tables=True)
     except Exception as e:
         logger.error(f"Error fetching URL {url}: {e}")
     return None
+
+
+def fetch_page_image(url: str) -> str:
+    """Downloads a page only for its main picture (used by images_backfill.py)."""
+    try:
+        downloaded = trafilatura.fetch_url(url)
+        return page_image_from_html(downloaded) if downloaded else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def get_image(entry, url: str) -> str:
+    """The article's main picture: the page's og:image if we downloaded it, else one inside the feed entry."""
+    found = _PAGE_IMAGES.pop(url, "")
+    if found:
+        return found
+    for key in ("media_content", "media_thumbnail"):
+        for m in entry.get(key) or []:
+            src = _clean_image(m.get("url"))
+            if src:
+                return src
+    for link in entry.get("links") or []:
+        if (link.get("type") or "").startswith("image/"):
+            src = _clean_image(link.get("href"))
+            if src:
+                return src
+    return ""
 
 
 def get_text(feed: Feed, entry, url: str) -> str:
